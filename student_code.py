@@ -146,3 +146,12 @@ class InferenceEngine(object):
             [fact.statement, rule.lhs, rule.rhs])
         ####################################################
         # Student code goes here
+        list_of_statements = rule.lhs
+        binding = match(fact.statement, list_of_statements[0])  # Check if fact statement matches LHS statement in rule
+        if binding:  # if there is a match, check to see if there are more statements in the lhs
+            if len(list_of_statements) > 1:
+                new_rule = Rule([], ())  # create new inferred rule supported by fact + rule pair
+                kb.kb_assert(new_rule)  # assert into the kb
+            else:
+                new_fact = Fact(rule.rhs, ())  # create new inferred fact supported by fact + rule pair
+                kb.kb_assert(new_fact)  # assert into the kb
