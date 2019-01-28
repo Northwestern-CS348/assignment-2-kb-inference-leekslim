@@ -55,24 +55,24 @@ class KnowledgeBase(object):
             None
         """
         printv("Adding {!r}", 1, verbose, [fact_rule])
-        if isinstance(fact_rule, Fact):
-            if fact_rule not in self.facts:
+        if isinstance(fact_rule, Fact):  # if adding a fact...
+            if fact_rule not in self.facts:  # check if already in kb
                 self.facts.append(fact_rule)
                 for rule in self.rules:
                     self.ie.fc_infer(fact_rule, rule, self)
             else:
-                if fact_rule.supported_by:
-                    ind = self.facts.index(fact_rule)
-                    for f in fact_rule.supported_by:
-                        self.facts[ind].supported_by.append(f)
+                if fact_rule.supported_by:  # if already in kb, see if supported by something, i.e. it was inferred
+                    ind = self.facts.index(fact_rule)  # find the fact in kb
+                    for f in fact_rule.supported_by:  # for everything that led to inference...
+                        self.facts[ind].supported_by.append(f)  # add the new support for the fact
                 else:
-                    ind = self.facts.index(fact_rule)
-                    self.facts[ind].asserted = True
-        elif isinstance(fact_rule, Rule):
+                    ind = self.facts.index(fact_rule)  # otherwise, it must be an assertion for
+                    self.facts[ind].asserted = True  # something that has already been inferred
+        elif isinstance(fact_rule, Rule):  # otherwise if it is a rule
             if fact_rule not in self.rules:
-                self.rules.append(fact_rule)
+                self.rules.append(fact_rule)  # add to kb if not already
                 for fact in self.facts:
-                    self.ie.fc_infer(fact, fact_rule, self)
+                    self.ie.fc_infer(fact, fact_rule, self)  # iterate over facts to infer new things
             else:
                 if fact_rule.supported_by:
                     ind = self.rules.index(fact_rule)
