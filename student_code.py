@@ -142,12 +142,14 @@ class KnowledgeBase(object):
                     for pair in supported_fact.supported_by:  # find all pairs that contain this retracting fact
                         if fact_in_kb in pair:  # retracting fact may support the same fact in multiple ways
                             supported_fact.supported_by.remove(pair)  # all fact-rule pairs that must be rescinded
+                            pair[1].supports_facts.remove(supported_fact)  # remove the supported fact from the rule as well
                     if (not supported_fact.supported_by) and (not supported_fact.asserted):  # if no longer supported or asserted
                         self.kb_retract(supported_fact)  # recurse onto this fact; if fact still supported, step is done
                 for supported_rule in fact_in_kb.supports_rules:  # for every rule it supports
                     for pair in supported_rule.supported_by:
                         if fact_in_kb in pair:
                             supported_rule.supported_by.remove(pair)
+                            pair[1].supports_rules.remove(supported_rule)
                     if (not supported_rule.supported_by) and (not supported_rule.asserted):  # same as above
                         self.kb_retract(supported_rule)
                 self.facts.remove(fact_in_kb)
@@ -167,12 +169,14 @@ class KnowledgeBase(object):
                     for pair in sf.supported_by:
                         if rule_in_kb in pair:
                             sf.supported_by.remove(pair)
+                            pair[0].supports_facts.remove(sf)
                     if (not sf.supported_by) and (not sf.asserted):
                         self.kb_retract(sf)  # no longer has any supports, so for sure retractable
                 for sr in rule_in_kb.supports_rules:
                     for pair in sr.supported_by:
                         if rule_in_kb in pair:
                             sr.supported_by.remove(pair)
+                            pair[0].supports_rules.remove(sr)
                     if (not sr.supported_by) and (not sr.asserted):
                         self.kb_retract(sr)
                 self.rules.remove(rule_in_kb)
