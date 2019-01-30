@@ -71,20 +71,25 @@ class KBTest(unittest.TestCase):
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(str(answer[0]), "?X : bing")
 
+"""student tests using kb_"""
+
+"""def test6(self):
+    # this test ensures...
+    ask2 = read.parse_input("")"""
 
 def pprint_justification(answer):
     """Pretty prints (hence pprint) justifications for the answer.
     """
-    if not answer: print('Answer is False, no justification')
+    if not answer:
+        print('Answer is False, no justification')
     else:
         print('\nJustification:')
-        for i in range(0,len(answer.list_of_bindings)):
+        for i in range(0, len(answer.list_of_bindings)):
             # print bindings
             print(answer.list_of_bindings[i][0])
             # print justifications
             for fact_rule in answer.list_of_bindings[i][1]:
-                pprint_support(fact_rule,0)
-        print
+                pprint_support(fact_rule, 0)
 
 def pprint_support(fact_rule, indent):
     """Recursive pretty printer helper to nicely indent

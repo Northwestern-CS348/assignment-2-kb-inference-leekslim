@@ -1,0 +1,9 @@
+fact: (dresslike profHammond TonyStark)
+fact: (lookslike profHammond TonyStark)
+fact: (talkslike profHammond TonyStark)
+fact: (techgenius profHammond)
+
+rule: ((dresslike ?x ?y) (lookslike ?x ?y) -> (resembles ?x ?y))
+rule: ((
+rule: ((TonyStark ?x) -> (IronMan ?x))
+rule: ((IronMan ?x) -> (Avenger ?x))
