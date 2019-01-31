@@ -139,19 +139,23 @@ class KnowledgeBase(object):
                 fact_in_kb.asserted = False
             else:  # retracting a fact that is not supported by assertion or inference
                 for supported_fact in fact_in_kb.supports_facts:  # for every fact it supports
-                    for pair in supported_fact.supported_by:  # find all pairs that contain this retracting fact
+                    ind = self.facts.index(supported_fact)  # find the fact in the kb
+                    sf_in_kb = self.facts[ind]  # find the fact in the kb
+                    for pair in sf_in_kb.supported_by:  # find all pairs that contain this retracting fact
                         if fact_in_kb in pair:  # retracting fact may support the same fact in multiple ways
-                            supported_fact.supported_by.remove(pair)  # all fact-rule pairs that must be rescinded
-                            pair[1].supports_facts.remove(supported_fact)  # remove the supported fact from the rule as well
-                    if (not supported_fact.supported_by) and (not supported_fact.asserted):  # if no longer supported or asserted
-                        self.kb_retract(supported_fact)  # recurse onto this fact; if fact still supported, step is done
+                            sf_in_kb.supported_by.remove(pair)  # all fact-rule pairs that must be rescinded
+                            pair[1].supports_facts.remove(sf_in_kb)  # remove the supported fact from the rule as well
+                    if (not sf_in_kb.supported_by) and (not sf_in_kb.asserted):  # if no longer supported or asserted
+                        self.kb_retract(sf_in_kb)  # recurse onto this fact; if fact still supported, step is done
                 for supported_rule in fact_in_kb.supports_rules:  # for every rule it supports
-                    for pair in supported_rule.supported_by:
+                    ind = self.rules.index(supported_rule)
+                    sr_in_kb = self.rules[ind]
+                    for pair in sr_in_kb.supported_by:
                         if fact_in_kb in pair:
-                            supported_rule.supported_by.remove(pair)
-                            pair[1].supports_rules.remove(supported_rule)
-                    if (not supported_rule.supported_by) and (not supported_rule.asserted):  # same as above
-                        self.kb_retract(supported_rule)
+                            sr_in_kb.supported_by.remove(pair)
+                            pair[1].supports_rules.remove(sr_in_kb)
+                    if (not sr_in_kb.supported_by) and (not sr_in_kb.asserted):  # same as above
+                        self.kb_retract(sr_in_kb)
                 self.facts.remove(fact_in_kb)
         elif isinstance(fact_or_rule, Rule):
             rule_in_kb = None
@@ -166,19 +170,23 @@ class KnowledgeBase(object):
                 print('rule is still supported, this should not be retracted')
             else:  # assuming supported by and support directly reference each other in kb as above
                 for sf in rule_in_kb.supports_facts:  # sf is supported_fact as above
-                    for pair in sf.supported_by:
+                    ind = self.facts.index(sf)
+                    sf_in_kb = self.facts[ind]
+                    for pair in sf_in_kb.supported_by:
                         if rule_in_kb in pair:
-                            sf.supported_by.remove(pair)
-                            pair[0].supports_facts.remove(sf)
-                    if (not sf.supported_by) and (not sf.asserted):
+                            sf_in_kb.supported_by.remove(pair)
+                            pair[0].supports_facts.remove(sf_in_kb)
+                    if (not sf_in_kb.supported_by) and (not sf_in_kb.asserted):
                         self.kb_retract(sf)  # no longer has any supports, so for sure retractable
-                for sr in rule_in_kb.supports_rules:
-                    for pair in sr.supported_by:
+                for sr in rule_in_kb.supports_rules:  # sr is supported_rule as above
+                    ind = self.rules.index(sr)
+                    sr_in_kb = self.rules[ind]
+                    for pair in sr_in_kb.supported_by:
                         if rule_in_kb in pair:
-                            sr.supported_by.remove(pair)
-                            pair[0].supports_rules.remove(sr)
-                    if (not sr.supported_by) and (not sr.asserted):
-                        self.kb_retract(sr)
+                            sr_in_kb.supported_by.remove(pair)
+                            pair[0].supports_rules.remove(sr_in_kb)
+                    if (not sr_in_kb.supported_by) and (not sr_in_kb.asserted):
+                        self.kb_retract(sr_in_kb)
                 self.rules.remove(rule_in_kb)
         else:
             print("unsupported, not fact or rule")
@@ -210,11 +218,11 @@ class InferenceEngine(object):
                     new_lhs.append(instantiate(ls, binding))  # add new inferred rule's statements to lhs
                 new_rhs = instantiate(rule.rhs, binding)
                 new_rule = Rule([new_lhs, new_rhs], [pair])
-                kb.kb_assert(new_rule)
                 fact.supports_rules.append(new_rule)  # add to matching rule and fact's supports rules
                 rule.supports_rules.append(new_rule)
+                kb.kb_assert(new_rule)
             else:  # assert new fact, assuming rhs can only contain one statement
                 new_fact = Fact(instantiate(rule.rhs, binding), [pair])
-                kb.kb_assert(new_fact)
                 fact.supports_facts.append(new_fact)
                 rule.supports_facts.append(new_fact)
+                kb.kb_assert(new_fact)

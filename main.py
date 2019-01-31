@@ -82,13 +82,14 @@ class KBTest(unittest.TestCase):
         """
         r1 = read.parse_input("fact: (dresslike profHammond TonyStark)")
         print(' Retracting', r1)
-        ask1 = read.parse_input("fact: (isliterally ?X TonyStark")
+        self.KB.kb_retract(r1)
+        ask1 = read.parse_input("fact: (isliterally ?X TonyStark)")
         print(' Asking if', ask1)
         answer = self.KB.kb_ask(ask1)
         self.assertEqual(str(answer[0]), "?X : profHammond")
         ask2 = read.parse_input("fact: (resembles profHammond ?Y)")
         print(' Asking if', ask2)
-        answer = self.Kb.kb_ask(ask2)
+        answer = self.KB.kb_ask(ask2)
         self.assertFalse(answer)
 
     def test7(self):
@@ -97,15 +98,17 @@ class KBTest(unittest.TestCase):
         """
         r1 = read.parse_input("fact: (lookslike profHammond TonyStark)")
         print(' Retracting', r1)
+        self.KB.kb_retract(r1)
         ask1 = read.parse_input("fact: (resembles profHammond ?Y)")
         print(' Asking if', ask1)
         answer = self.KB.kb_ask(ask1)
         self.assertFalse(answer)
         a1 = read.parse_input("fact: (lookslike profHammond TonyStark)")
         print(' Reasserting', a1)
+        self.KB.kb_assert(a1)
         ask2 = read.parse_input("fact: (resembles profHammond ?Y)")
         print(' Asking if', ask2)
-        answer = self.Kb.kb_ask(ask2)
+        answer = self.KB.kb_ask(ask2)
         self.assertEqual(str(answer[0]), "?Y : TonyStark")
 
     def test8(self):
@@ -114,19 +117,21 @@ class KBTest(unittest.TestCase):
         """
         r1 = read.parse_input("fact: (techgenius profHammond)")
         print(' Retracting', r1)
+        self.KB.kb_retract(r1)
         r2 = read.parse_input("fact: (talkslike profHammond)")
         print(' Retracting', r2)
+        self.KB.kb_retract(r2)
         ask1 = read.parse_input("fact: (isliterally ?X TonyStark)")
         print(' Asking if', ask1)
         answer = self.KB.kb_ask(ask1)
         self.assertFalse(answer)
         ask2 = read.parse_input("fact: (IronMan ?X)")
         print(' Asking if', ask2)
-        answer = self.Kb.kb_ask(ask2)
+        answer = self.KB.kb_ask(ask2)
         self.assertFalse(answer)
         ask3 = read.parse_input("fact: (Avenger ?X)")
         print(' Asking if', ask3)
-        answer = self.Kb.kb_ask(ask3)
+        answer = self.KB.kb_ask(ask3)
         self.assertFalse(answer)
 
     def test9(self):
@@ -135,6 +140,7 @@ class KBTest(unittest.TestCase):
         """
         r1 = read.parse_input("fact: (techgenius profHammond)")
         print(' Retracting', r1)
+        self.KB.kb_retract(r1)
         ask1 = read.parse_input("fact: (employable ?X)")
         print(' Asking if', ask1)
         answer = self.KB.kb_ask(ask1)
@@ -144,6 +150,20 @@ class KBTest(unittest.TestCase):
         answer = self.KB.kb_ask(ask2)
         self.assertFalse(answer)
 
+    def test10(self):
+        """this student generated test ensures the inference engine is working at a basic level"""
+        ask1 = read.parse_input("fact: (Avenger ?X)")
+        print(' Asking if', ask1)
+        answer = self.KB.kb_ask(ask1)
+        self.assertEqual(str(answer[0]), "?X : profHammond")
+        ask2 = read.parse_input("fact: (smart ?X)")
+        print(' Asking if', ask2)
+        answer = self.KB.kb_ask(ask2)
+        self.assertEqual(str(answer[0]), "?X : profHammond")
+        ask3 = read.parse_input("fact: (employable ?X)")
+        print(' Asking if', ask3)
+        answer = self.KB.kb_ask(ask3)
+        self.assertEqual(str(answer[0]), "?X : profHammond")
 
 def pprint_justification(answer):
     """Pretty prints (hence pprint) justifications for the answer.
